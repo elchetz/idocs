@@ -15,3 +15,11 @@ The program currently does not care about:
 - file encoding 
 - whitespace
 - proper exception handling
+
+
+Building the project:
+The project can be build using manven2 or 3 with:
+> mvn clean package
+
+Running the project:
+> java -jar target/idocs-workshop-0.0.1-SNAPSHOT.jar inFile1 inFile2 outResultsFile 
