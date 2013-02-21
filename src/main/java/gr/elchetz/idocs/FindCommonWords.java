@@ -11,8 +11,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * @author elchetz
@@ -27,19 +28,32 @@ public class FindCommonWords {
 		if (args.length < 3) {
 			System.out
 					.println("Usage: java FindCommonWords file1 file2 outFile");
-
 		} else {
-			File file1 = new File(args[0]);
-			File file2 = new File(args[1]);
+
+			File shortFile = new File(args[0]);
+			File longFile = new File(args[1]);
+
+			if (shortFile.length() > longFile.length()) {
+				File tmpFile = shortFile;
+				shortFile = longFile;
+				longFile = tmpFile;
+			}
+
+			long start = System.currentTimeMillis();
 			FindCommonWords findCommonWords = new FindCommonWords();
 			try {
 				findCommonWords.writeFile(
-						findCommonWords.parseFileTwo(file2,
-								findCommonWords.readFileOne(file1)), args[2]);
+						findCommonWords.parseFileTwo(longFile,
+								findCommonWords.readFileOne(shortFile)),
+						args[2]);
 			} catch (IOException e) {
 				System.err.println("Oops!");
 				e.printStackTrace();
 			}
+			long end = System.currentTimeMillis();
+			
+			System.out.println("Execution Time: " + (end-start) + "ms");
+			
 		}
 
 	}
@@ -79,9 +93,10 @@ public class FindCommonWords {
 	 * @throws IOException
 	 *             If it fails to access the file.
 	 */
-	protected List<String> parseFileTwo(File file, List<String> words)
+	protected Set<String> parseFileTwo(File file, List<String> words)
 			throws IOException {
-		List<String> matches = new ArrayList<String>();
+		//List<String> matches = new ArrayList<String>();
+		Set<String> matches = new TreeSet<String>(); 
 		BufferedReader buffer = new BufferedReader(new FileReader(file));
 		String line;
 		while ((line = buffer.readLine()) != null) {
@@ -90,7 +105,6 @@ public class FindCommonWords {
 			}
 		}
 		buffer.close();
-		Collections.sort(matches);
 		return matches;
 	}
 
@@ -104,7 +118,7 @@ public class FindCommonWords {
 	 * @throws IOException
 	 *             If writing to file fails.
 	 */
-	protected void writeFile(List<String> commonWords, String outFile)
+	protected void writeFile(Set<String> commonWords, String outFile)
 			throws IOException {
 		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
 				outFile)));

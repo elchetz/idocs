@@ -4,7 +4,9 @@ import static org.junit.Assert.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
@@ -47,11 +49,12 @@ public class FindCommonWordsTest {
 		words.add("e-word");
 		words.add("a-word");
 		words.add("c-word");
-		List<String> result = testMe.parseFileTwo(file1, words);
+		Set<String> result = testMe.parseFileTwo(file1, words);
 		assertEquals(result.size(), 3);
-		assertEquals(result.get(0), "a-word");
-		assertEquals(result.get(1), "c-word");
-		assertEquals(result.get(2), "e-word");
+		Iterator<String> iter = result.iterator();
+		assertEquals(iter.next(), "a-word");
+		assertEquals(iter.next(), "c-word");
+		assertEquals(iter.next(), "e-word");
 		
 	}
 
