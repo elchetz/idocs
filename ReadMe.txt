@@ -22,4 +22,14 @@ The project can be build using manven2 or 3 with:
 > mvn clean package
 
 Running the project:
-> java -jar target/idocs-workshop-0.0.1-SNAPSHOT.jar inFile1 inFile2 outResultsFile 
+> java -jar target/idocs-workshop-0.0.1-SNAPSHOT.jar inFile1 inFile2 outResultsFile
+
+
+Changelog:
+
+v0.0.2
+------
+- always load in memory the smallest file
+- keep matches to TreeSet in order to eliminate duplicates
+- printing execution time info
+
