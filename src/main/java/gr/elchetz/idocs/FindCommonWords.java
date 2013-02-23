@@ -3,23 +3,26 @@
  */
 package gr.elchetz.idocs;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.ArrayList;
+import java.io.Writer;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+
+import com.google.code.externalsorting.ExternalSort;
 
 /**
  * @author elchetz
  * 
  */
 public class FindCommonWords {
+
+	private static final String SORTED_SUFFIX = ".sorted";
+	private static final int lineBufferSize = 1000;
 
 	/**
 	 * @param args
@@ -30,101 +33,89 @@ public class FindCommonWords {
 					.println("Usage: java FindCommonWords file1 file2 outFile");
 		} else {
 
-			File shortFile = new File(args[0]);
-			File longFile = new File(args[1]);
+			long start = System.currentTimeMillis();
 
-			if (shortFile.length() > longFile.length()) {
-				File tmpFile = shortFile;
-				shortFile = longFile;
-				longFile = tmpFile;
+			Comparator<String> comparator = new Comparator<String>() {
+				public int compare(String r1, String r2) {
+					return r1.compareTo(r2);
+				}
+			};
+
+			List<File> l;
+			try {
+				for (int i = 0; i < 2; i++) {
+					l = ExternalSort.sortInBatch(new File(args[i]), comparator);
+					ExternalSort.mergeSortedFiles(l, new File(args[i]
+							+ SORTED_SUFFIX), comparator);
+				}
+
+			} catch (IOException e1) {
+				e1.printStackTrace();
+				System.exit(1);
 			}
 
-			long start = System.currentTimeMillis();
+			System.out.println("File Sorting Time: "
+					+ (System.currentTimeMillis() - start) + "ms");
+
+			start = System.currentTimeMillis();
+
+			File shortFile = new File(args[0] + SORTED_SUFFIX);
+			File longFile = new File(args[1] + SORTED_SUFFIX);
 			FindCommonWords findCommonWords = new FindCommonWords();
+
 			try {
-				findCommonWords.writeFile(
-						findCommonWords.parseFileTwo(longFile,
-								findCommonWords.readFileOne(shortFile)),
-						args[2]);
+				BufferedWriter out = new BufferedWriter(new FileWriter(args[2]
+						+ ".2"));
+				findCommonWords.findCommonWords(shortFile, longFile,
+						lineBufferSize, out);
+				out.close();
 			} catch (IOException e) {
-				System.err.println("Oops!");
 				e.printStackTrace();
 			}
-			long end = System.currentTimeMillis();
-			
-			System.out.println("Execution Time: " + (end-start) + "ms");
-			
+
+			System.out.println("File Processing: "
+					+ (System.currentTimeMillis() - start) + "ms");
+
 		}
 
 	}
 
 	/**
-	 * Reads a text file line by line and adds the lines to a list as strings
-	 * which are then returned sorted.
+	 * Finds common words in two files which contain one word per line.
 	 * 
-	 * @param file
-	 *            The text file to read from.
-	 * @return A list of strings sorted alphabetically.
+	 * @param file1
+	 *            The first file.
+	 * @param file2
+	 *            The second file.
+	 * @param bufferSize
+	 *            The size of the {@link LineBuffer}s used.
+	 * @param writer
+	 *            The writer to use in order to write common words.
 	 * @throws IOException
-	 *             If it fails to access the file.
+	 *             In case reading the files fails.
+	 * @since v0.1.0
 	 */
-	protected List<String> readFileOne(File file) throws IOException {
-		List<String> contents = new ArrayList<String>();
-
-		BufferedReader buffer = new BufferedReader(new FileReader(file));
-		String line;
-		while ((line = buffer.readLine()) != null) {
-			contents.add(line);
-		}
-		buffer.close();
-		return contents;
-	}
-
-	/**
-	 * Parses the file passed, and the lines found in the <code>words</code>
-	 * List are returned.
-	 * 
-	 * @param file
-	 *            The file to parse.
-	 * @param words
-	 *            The words to lookup.
-	 * @return A List of the common words found in <code>file</code> and
-	 *         <code>words</code>.
-	 * @throws IOException
-	 *             If it fails to access the file.
-	 */
-	protected Set<String> parseFileTwo(File file, List<String> words)
-			throws IOException {
-		//List<String> matches = new ArrayList<String>();
-		Set<String> matches = new TreeSet<String>(); 
-		BufferedReader buffer = new BufferedReader(new FileReader(file));
-		String line;
-		while ((line = buffer.readLine()) != null) {
-			if (words.contains(line)) {
-				matches.add(line);
+	public void findCommonWords(File file1, File file2, int bufferSize,
+			Writer writer) throws IOException {
+		String lineSep = System.getProperty("line.separator");
+		LineBuffer lineBuff1 = new LineBufferImpl(file1, bufferSize);
+		LineBuffer lineBuff2 = new LineBufferImpl(file2, bufferSize);
+		while (lineBuff1.hasMore() || lineBuff2.hasMore()) {
+			Set<String> intersection = new TreeSet<String>(
+					lineBuff1.getContents());
+			intersection.retainAll(lineBuff2.getContents());
+			for (String word : intersection) {
+				writer.write(word + lineSep);
+			}
+			int compare = lineBuff1.compareTo(lineBuff2);
+			if (compare == 0) {
+				lineBuff1.next();
+				lineBuff2.next();
+			} else if (compare < 0) {
+				lineBuff1.next();
+			} else {
+				lineBuff2.next();
 			}
 		}
-		buffer.close();
-		return matches;
-	}
-
-	/**
-	 * Writes the contents of the String List to a text file.
-	 * 
-	 * @param commonWords
-	 *            The List to write.
-	 * @param outFile
-	 *            The file to write to.
-	 * @throws IOException
-	 *             If writing to file fails.
-	 */
-	protected void writeFile(Set<String> commonWords, String outFile)
-			throws IOException {
-		PrintWriter out = new PrintWriter(new BufferedWriter(new FileWriter(
-				outFile)));
-		for (String word : commonWords) {
-			out.println(word);
-		}
-		out.close();
 	}
 }
