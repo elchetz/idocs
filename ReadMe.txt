@@ -33,3 +33,14 @@ v0.0.2
 - keep matches to TreeSet in order to eliminate duplicates
 - printing execution time info
 
+v0.1.0
+------
+- sorting the input files before processing 
+ (used open source implementation of sort-merge algorithm, from http://code.google.com/p/externalsortinginjava/)
+- no input files are loaded in memory, just buffered from input stream
+- matching results are not kept in memory, written to out-put stream directly
+
+	to run this version:
+	> mvn clean package
+	> cp lib/externalsortinginjava-0.1.1.jar target/
+	> java -jar target/idocs-workshop-0.1.0-SNAPSHOT.jar inFile1 inFile2 outResultsFile

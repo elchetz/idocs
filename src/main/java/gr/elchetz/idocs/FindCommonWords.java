@@ -64,12 +64,12 @@ public class FindCommonWords {
 			FindCommonWords findCommonWords = new FindCommonWords();
 
 			try {
-				BufferedWriter out = new BufferedWriter(new FileWriter(args[2]
-						+ ".2"));
+				BufferedWriter out = new BufferedWriter(new FileWriter(args[2]));
 				findCommonWords.findCommonWords(shortFile, longFile,
 						lineBufferSize, out);
 				out.close();
 			} catch (IOException e) {
+				System.err.println("Ooops!");
 				e.printStackTrace();
 			}
 
