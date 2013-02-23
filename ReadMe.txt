@@ -40,7 +40,13 @@ v0.1.0
 - no input files are loaded in memory, just buffered from input stream
 - matching results are not kept in memory, written to out-put stream directly
 
-	to run this version:
+- there is still a known issue: 
+	some common words are saved in the outfile two or more times, this is because they 
+	are multiple copies of them found in the input files and they spread across multiple buffered reads. 
+	A possible solution to this could be keeping track of the last word written to the output and if the 
+	new word found is the same, skip it.
+
+- to run this version:
 	> mvn clean package
 	> cp lib/externalsortinginjava-0.1.1.jar target/
 	> java -jar target/idocs-workshop-0.1.0-SNAPSHOT.jar inFile1 inFile2 outResultsFile
