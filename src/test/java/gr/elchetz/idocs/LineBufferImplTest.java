@@ -45,10 +45,13 @@ public class LineBufferImplTest {
 	@Test
 	public void testHasMore() throws IOException {
 		assertTrue(testMe.hasMore());	
-		testMe.next();
-		assertTrue(testMe.hasMore());
-		testMe.getContents();
-		assertFalse(testMe.hasMore());
+		int i =0;
+		while(testMe.hasMore()){
+			testMe.getContents();
+			testMe.next();
+			i++;
+		}
+		assertEquals(11, i);
 	}
 
 	/**
@@ -58,12 +61,13 @@ public class LineBufferImplTest {
 	 */
 	@Test
 	public void testContains() throws IOException {
-		assertTrue(testMe.contains("a-word"));
-		assertTrue(testMe.contains("c-word"));
-		assertTrue(testMe.contains("f-word"));
+		assertTrue(testMe.contains("a"));
+		assertTrue(testMe.contains("b"));
+		assertTrue(testMe.contains("c"));
 		testMe.next();
-		assertTrue(testMe.contains("e-word"));
-		assertTrue(testMe.contains("b-word"));
+		assertTrue(testMe.contains("d"));
+		assertTrue(testMe.contains("e"));
+		assertTrue(testMe.contains("f"));
 		
 	}
 
@@ -74,7 +78,7 @@ public class LineBufferImplTest {
 	@Test
 	public void testNext() throws IOException {
 		testMe.next();
-		assertEquals("e-word", testMe.last());
+		assertEquals("f", testMe.last());
 	}
 
 	/**
@@ -82,7 +86,7 @@ public class LineBufferImplTest {
 	 */
 	@Test
 	public void testLast() {
-		assertEquals("f-word", testMe.last());
+		assertEquals("c", testMe.last());
 	}
 
 	/**
@@ -97,8 +101,8 @@ public class LineBufferImplTest {
 		LineBuffer b2 = new LineBufferImpl(file1, bufferSize);
 		assertEquals(0, b1.compareTo(b2));
 		b2.next();
-		assertEquals(1, b1.compareTo(b2));
-		assertEquals(-1, b2.compareTo(b1));
+		assertTrue(b1.compareTo(b2)<0);
+		assertTrue(b2.compareTo(b1)>0);
 	}
 
 	/**
@@ -111,7 +115,12 @@ public class LineBufferImplTest {
 		assertEquals(3, testMe.getContents().size());
 		testMe.next();
 		assertNotNull(testMe.getContents());
-		assertEquals(2, testMe.getContents().size());
+		assertEquals(3, testMe.getContents().size());
+		for(int i=0;i<9;i++){
+			testMe.next();
+		}
+		assertNotNull(testMe.getContents());
+		assertEquals(1, testMe.getContents().size());
 	}
 
 }
