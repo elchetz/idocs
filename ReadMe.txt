@@ -50,3 +50,8 @@ v0.1.0
 	> mvn clean package
 	> cp lib/externalsortinginjava-0.1.1.jar target/
 	> java -jar target/idocs-workshop-0.1.0-SNAPSHOT.jar inFile1 inFile2 outResultsFile
+	
+v0.1.1
+------
+- Fixed the bug that was known in v0.1.0, common words are now written to the output file only once
+
