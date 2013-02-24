@@ -17,38 +17,38 @@ import org.junit.Test;
 
 public class FindCommonWordsTest {
 
+	private static final String TEST_FILE1_TXT = "test-file1.txt";
 	private static final String TEST_FILE2_TXT = "test-file2.txt";
-	private static final String TEST_FILE3_TXT = "test-file3.txt";
-	private static final String[] EXPECTED_RESULTS = {"b", "e", "i", "o", "u", "x", "y", "z" };
+	private static final String[] EXPECTED_RESULTS = { "b", "e", "i", "o", "u",
+			"x", "y", "z" };
+	private File file1;
 	private File file2;
-	private File file3;
 	private FindCommonWords testMe;
 
 	@Before
 	public void setUp() throws Exception {
 
 		this.testMe = new FindCommonWords();
+		this.file1 = new File(this.getClass().getClassLoader()
+				.getResource(TEST_FILE1_TXT).toURI());
 		this.file2 = new File(this.getClass().getClassLoader()
 				.getResource(TEST_FILE2_TXT).toURI());
-		this.file3 = new File(this.getClass().getClassLoader()
-				.getResource(TEST_FILE3_TXT).toURI());
 	}
 
 	@After
 	public void tearDown() throws Exception {
 		this.testMe = null;
+		this.file1 = null;
 		this.file2 = null;
-		this.file3 = null;
 	}
-
 
 	@Test
 	public void testFindCommonWords() throws Exception {
 		StringWriter writer = new StringWriter();
-		testMe.findCommonWords(file2, file3, 5,writer);
+		testMe.findCommonWords(file1, file2, 5, writer);
 		writer.close();
 		String[] result = writer.toString().split("\n");
-		assertEquals(8, result.length);
+		assertEquals("Results: " + Arrays.toString(result),8, result.length);
 		assertArrayEquals(EXPECTED_RESULTS, result);
 	}
 
