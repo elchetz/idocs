@@ -98,6 +98,7 @@ public class FindCommonWords {
 	public void findCommonWords(File file1, File file2, int bufferSize,
 			Writer writer) throws IOException {
 		String lineSep = System.getProperty("line.separator");
+		String lastWordFound = null;
 		LineBuffer lineBuff1 = new LineBufferImpl(file1, bufferSize);
 		LineBuffer lineBuff2 = new LineBufferImpl(file2, bufferSize);
 		while (lineBuff1.hasMore() || lineBuff2.hasMore()) {
@@ -105,7 +106,10 @@ public class FindCommonWords {
 					lineBuff1.getContents());
 			intersection.retainAll(lineBuff2.getContents());
 			for (String word : intersection) {
-				writer.write(word + lineSep);
+				if (!word.equals(lastWordFound)) {
+					writer.write(word + lineSep);
+					lastWordFound = word;
+				}
 			}
 			int compare = lineBuff1.compareTo(lineBuff2);
 			if (compare == 0) {
