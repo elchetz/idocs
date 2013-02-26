@@ -55,3 +55,25 @@ v0.1.1
 ------
 - Fixed the bug that was known in v0.1.0, common words are now written to the output file only once
 
+v0.1.2
+------
+- Contributed to externalsortinginjava project with a sort/distinct feature 
+	(currently in feature branch http://externalsortinginjava.googlecode.com/svn/branches/sort_distinct/)
+- Simplified the code since there are no duplicates expected anymore (and other over-engineered crap).
+- Improved dependency management 
+	(since externalsortinginjava is not on a public repository at the moment a system dependency is used pointing to the jar in lib/)
+- Added classpath reference to manifest file, pointing to ../lib/externalsortinginjava-0.1.2.jar in order to be able to execute the jar directly from target/ 
+	(this is not recommended for normal projects, where a nice packaging should be done)
+- Performance has improved more (from ~800ms to ~25ms) for the sample files (sorting remains around the same ~500ms)
+ 
+- to run this version:
+	
+	build:
+	> mvn clean package
+	
+	run with the sample input files:
+	> ./runSample.sh  
+	
+	or run manually:
+	> java -jar target/idocs-workshop-0.1.2-SNAPSHOT.jar inFile1 inFile2 outResultsFile
+
