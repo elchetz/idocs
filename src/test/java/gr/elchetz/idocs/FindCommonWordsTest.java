@@ -41,7 +41,7 @@ public class FindCommonWordsTest {
 	@Test
 	public void testFindCommonWords() throws Exception {
 		StringWriter writer = new StringWriter();
-		testMe.findCommonWords(file1, file2, 5, writer);
+		testMe.findCommonWords(file1, file2, writer);
 		writer.close();
 		String[] result = writer.toString().split("\n");
 		assertEquals("Results: " + Arrays.toString(result),8, result.length);

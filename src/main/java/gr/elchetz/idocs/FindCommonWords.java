@@ -3,15 +3,15 @@
  */
 package gr.elchetz.idocs;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
 import com.google.code.externalsorting.ExternalSort;
 
@@ -22,7 +22,6 @@ import com.google.code.externalsorting.ExternalSort;
 public class FindCommonWords {
 
 	private static final String SORTED_SUFFIX = ".sorted";
-	private static final int lineBufferSize = 1000;
 
 	/**
 	 * @param args
@@ -42,13 +41,12 @@ public class FindCommonWords {
 			};
 
 			List<File> l;
+
 			try {
 				for (int i = 0; i < 2; i++) {
 					l = ExternalSort.sortInBatch(new File(args[i]), comparator);
-					ExternalSort.mergeSortedFiles(l, new File(args[i]
-							+ SORTED_SUFFIX), comparator);
+					ExternalSort.mergeSortedFiles(l, File.createTempFile(args[i], SORTED_SUFFIX), comparator, true);
 				}
-
 			} catch (IOException e1) {
 				e1.printStackTrace();
 				System.exit(1);
@@ -61,12 +59,11 @@ public class FindCommonWords {
 
 			File shortFile = new File(args[0] + SORTED_SUFFIX);
 			File longFile = new File(args[1] + SORTED_SUFFIX);
-			FindCommonWords findCommonWords = new FindCommonWords();
 
+			FindCommonWords findCommonWords = new FindCommonWords();
 			try {
 				BufferedWriter out = new BufferedWriter(new FileWriter(args[2]));
-				findCommonWords.findCommonWords(shortFile, longFile,
-						lineBufferSize, out);
+				findCommonWords.findCommonWords(shortFile, longFile, out);
 				out.close();
 			} catch (IOException e) {
 				System.err.println("Ooops!");
@@ -95,31 +92,36 @@ public class FindCommonWords {
 	 *             In case reading the files fails.
 	 * @since v0.1.0
 	 */
-	public void findCommonWords(File file1, File file2, int bufferSize,
-			Writer writer) throws IOException {
+	public void findCommonWords(File file1, File file2, Writer writer)
+			throws IOException {
+
 		String lineSep = System.getProperty("line.separator");
-		String lastWordFound = null;
-		LineBuffer lineBuff1 = new LineBufferImpl(file1, bufferSize);
-		LineBuffer lineBuff2 = new LineBufferImpl(file2, bufferSize);
-		while (lineBuff1.hasMore() || lineBuff2.hasMore()) {
-			Set<String> intersection = new TreeSet<String>(
-					lineBuff1.getContents());
-			intersection.retainAll(lineBuff2.getContents());
-			for (String word : intersection) {
-				if (!word.equals(lastWordFound)) {
-					writer.write(word + lineSep);
-					lastWordFound = word;
-				}
+		String lineFile1;
+		String lineFile2;
+
+		BufferedReader r1 = new BufferedReader(new FileReader(file1));
+		BufferedReader r2 = new BufferedReader(new FileReader(file2));
+		lineFile1 = r1.readLine();
+		lineFile2 = r2.readLine();
+
+		while (lineFile1 != null && lineFile2 != null) {
+			if (lineFile1.equals(lineFile2)) {
+				writer.write(lineFile1 + lineSep);
 			}
-			int compare = lineBuff1.compareTo(lineBuff2);
-			if (compare == 0) {
-				lineBuff1.next();
-				lineBuff2.next();
-			} else if (compare < 0) {
-				lineBuff1.next();
+
+			int order = lineFile1.compareTo(lineFile2);
+
+			if (order == 0) {
+				lineFile1 = r1.readLine();
+				lineFile2 = r2.readLine();
+			} else if (order < 0) {
+				lineFile1 = r1.readLine();
 			} else {
-				lineBuff2.next();
+				lineFile2 = r2.readLine();
 			}
 		}
+
+		r1.close();
+		r2.close();
 	}
 }
