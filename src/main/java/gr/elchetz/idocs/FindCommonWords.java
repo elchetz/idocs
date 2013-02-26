@@ -29,7 +29,7 @@ public class FindCommonWords {
 	public static void main(String[] args) {
 		if (args.length < 3) {
 			System.out
-					.println("Usage: java FindCommonWords file1 file2 outFile");
+					.println(String.format("Usage: java %s file1 file2 outFile", FindCommonWords.class.getName()));
 		} else {
 
 			long start = System.currentTimeMillis();
@@ -40,12 +40,14 @@ public class FindCommonWords {
 				}
 			};
 
-			List<File> l;
+			List<File> tempFiles;
+			File[] inputFiles = {new File(args[0] + SORTED_SUFFIX), new File(args[1] + SORTED_SUFFIX)};
 
 			try {
 				for (int i = 0; i < 2; i++) {
-					l = ExternalSort.sortInBatch(new File(args[i]), comparator);
-					ExternalSort.mergeSortedFiles(l, File.createTempFile(args[i], SORTED_SUFFIX), comparator, true);
+					tempFiles = ExternalSort.sortInBatch(new File(args[i]), comparator);
+					ExternalSort.mergeSortedFiles(tempFiles, inputFiles[i] , comparator, true);
+					inputFiles[i].deleteOnExit();
 				}
 			} catch (IOException e1) {
 				e1.printStackTrace();
@@ -57,13 +59,10 @@ public class FindCommonWords {
 
 			start = System.currentTimeMillis();
 
-			File shortFile = new File(args[0] + SORTED_SUFFIX);
-			File longFile = new File(args[1] + SORTED_SUFFIX);
-
 			FindCommonWords findCommonWords = new FindCommonWords();
 			try {
 				BufferedWriter out = new BufferedWriter(new FileWriter(args[2]));
-				findCommonWords.findCommonWords(shortFile, longFile, out);
+				findCommonWords.findCommonWords(inputFiles[0], inputFiles[1], out);
 				out.close();
 			} catch (IOException e) {
 				System.err.println("Ooops!");
@@ -72,6 +71,8 @@ public class FindCommonWords {
 
 			System.out.println("File Processing: "
 					+ (System.currentTimeMillis() - start) + "ms");
+			
+			System.out.println(String.format("Common words in files %s and %s are saved in file %s", args[0], args[1], args[2]));
 
 		}
 
