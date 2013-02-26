@@ -57,7 +57,7 @@ v0.1.1
 
 v0.1.2
 ------
-- Contributed to externalsortinginjava project with a sort/distinct feature 
+- Contributed to externalsortinginjava project with a sort/distinct feature, and used that instead
 	(currently in feature branch http://externalsortinginjava.googlecode.com/svn/branches/sort_distinct/)
 - Simplified the code since there are no duplicates expected anymore (and other over-engineered crap).
 - Improved dependency management 
