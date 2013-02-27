@@ -40,12 +40,13 @@ public class FindCommonWordsTest {
 
 	@Test
 	public void testFindCommonWords() throws Exception {
+	        String lineSep = System.getProperty("line.separator");
 		StringWriter writer = new StringWriter();
 		testMe.findCommonWords(file1, file2, writer);
 		writer.close();
-		String[] result = writer.toString().split("\n");
+		String[] result = writer.toString().split(lineSep);
 		assertEquals("Results: " + Arrays.toString(result),8, result.length);
-		assertArrayEquals(EXPECTED_RESULTS, result);
+		assertArrayEquals("Results: " + Arrays.toString(result),EXPECTED_RESULTS, result);
 	}
 
 }
