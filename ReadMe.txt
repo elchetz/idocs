@@ -77,3 +77,23 @@ v0.1.2
 	or run manually:
 	> java -jar target/idocs-workshop-0.1.2-SNAPSHOT.jar inFile1 inFile2 outResultsFile
 
+v0.1.3
+------
+- Removed system dependency to "../lib/externalsortinginjava-0.1.2.jar"
+- Removed lib/
+- Added dependency to com.google.code:externalsortinginjava:0.1.2-SNAPSHOT
+- Added repository snapshots.externalsortinginjava.googlecode.com in order 
+  to resolve the above dependency
+ 
+- to run this version:
+	
+	build:
+	> mvn clean package 
+	
+	run with the sample input files:
+	> ./runSample.sh  
+	
+	or run manually:
+	> java -jar target/idocs-workshop-0.1.3-SNAPSHOT.jar inFile1 inFile2 outResultsFile
+  
+	

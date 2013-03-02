@@ -1,6 +1,0 @@
-Manifest-Version: 1.0
-Built-By: elchetz
-Build-Jdk: 1.7.0_15
-Main-Class: gr.elchetz.idocs.FindCommonWords
-Class-Path: ../lib/externalsortinginjava-0.1.2.jar
-Created-By: Maven
