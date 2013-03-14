@@ -50,12 +50,49 @@
 				</executions>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+			<plugins>
+				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+				<plugin>
+					<groupId>org.eclipse.m2e</groupId>
+					<artifactId>lifecycle-mapping</artifactId>
+					<version>1.0.0</version>
+					<configuration>
+						<lifecycleMappingMetadata>
+							<pluginExecutions>
+								<pluginExecution>
+									<pluginExecutionFilter>
+										<groupId>
+											org.apache.maven.plugins
+										</groupId>
+										<artifactId>
+											maven-dependency-plugin
+										</artifactId>
+										<versionRange>
+											[2.6,)
+										</versionRange>
+										<goals>
+											<goal>
+												copy-dependencies
+											</goal>
+										</goals>
+									</pluginExecutionFilter>
+									<action>
+										<ignore></ignore>
+									</action>
+								</pluginExecution>
+							</pluginExecutions>
+						</lifecycleMappingMetadata>
+					</configuration>
+				</plugin>
+			</plugins>
+		</pluginManagement>
 	</build>
 	<dependencies>
 		<dependency>
 			<groupId>com.google.code</groupId>
 			<artifactId>externalsortinginjava</artifactId>
-			<version>0.1.2-SNAPSHOT</version>
+			<version>0.1.2</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
@@ -67,11 +104,8 @@
 
 	<repositories>
 		<repository>
-			<id>snapshots.externalsortinginjava.googlecode.com</id>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-			<url>http://externalsortinginjava.googlecode.com/svn/m2/snapshots</url>
+			<id>externalsortinginjava.googlecode.com</id>
+			<url>http://externalsortinginjava.googlecode.com/svn/m2/releases</url>
 		</repository>
 	</repositories>
 </project>
